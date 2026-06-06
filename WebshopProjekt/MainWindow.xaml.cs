@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WebshopProjekt.UserControls;
 
 namespace WebshopProjekt
 {
@@ -19,6 +20,28 @@ namespace WebshopProjekt
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void bezarasMenu_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
+
+        private void termekekMenu_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            feladatPanel.Children.Clear();
+            feladatPanel.Children.Add(new UserControlTermekek());
+        }
+
+        private void userMenu_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            feladatPanel.Children.Clear();
+            feladatPanel.Children.Add(new UserControlUser());
+        }
+
+        private void vevoMenu_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

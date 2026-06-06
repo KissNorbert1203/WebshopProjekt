@@ -5,8 +5,52 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebshopProjekt"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" 
+        Height="700" 
+        Width="800"
+        FontSize="24"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        WindowStyle="None">
+    <Window.Resources>
+        <ResourceDictionary Source="Resources/ListViewItem.xaml" />
 
-    </Grid>
+    </Window.Resources>
+    <DockPanel Background="Sienna">
+        <StackPanel Height="30" DockPanel.Dock="Top">
+            <TextBlock
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Cristalia"
+            TextAlignment="Left"/>
+
+        </StackPanel>
+        <StackPanel Width="200" DockPanel.Dock="Top" Margin="20">
+            <ListView>
+                <ListViewItem
+                x:Name="termekekMenu"
+                Content="Termékek"
+                MouseLeftButtonUp="termekekMenu_MouseLeftButtonUp"
+                Style="{StaticResource ResourceKey=ListItemStyle}" />
+                <ListViewItem
+                x:Name="userMenu"
+                Content="User"
+                MouseLeftButtonUp="userMenu_MouseLeftButtonUp"
+                Style="{StaticResource ResourceKey=ListItemStyle}" />
+                <ListViewItem
+                x:Name="vevoMenu"
+                Content="Vevők"
+                MouseLeftButtonUp="vevoMenu_MouseLeftButtonUp"
+                Style="{StaticResource ResourceKey=ListItemStyle}" />
+                <ListViewItem
+                x:Name="bezarasMenu"
+                Background="Red"
+                Content="Bezárás"
+                Foreground="White"
+                MouseLeftButtonUp="bezarasMenu_MouseLeftButtonUp"
+                Style="{StaticResource ResourceKey=ListItemStyle}" />
+            </ListView>
+        </StackPanel>
+        <StackPanel x:Name="feladatPanel" Margin="0, 20, 0, 0" DockPanel.Dock="Right" />
+    </DockPanel>
 </Window>
