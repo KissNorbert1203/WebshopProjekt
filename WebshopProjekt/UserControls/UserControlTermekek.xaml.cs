@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WebshopProjekt.Models;
+using WebshopProjekt.Views;
 using WebshopProjekt.Services;
 
 namespace WebshopProjekt.UserControls
@@ -32,6 +34,7 @@ namespace WebshopProjekt.UserControls
             mentesBtn.Visibility = Visibility.Visible;
             modBtn.Visibility = Visibility.Hidden;
             torlesBtn.Visibility = Visibility.Hidden;
+            megrendelesBtn.Visibility = Visibility.Hidden;
         }
 
         private void ReadDatabase()
@@ -48,12 +51,14 @@ namespace WebshopProjekt.UserControls
             mentesBtn.Visibility = Visibility.Visible;
             modBtn.Visibility = Visibility.Hidden;
             torlesBtn.Visibility = Visibility.Hidden;
+            megrendelesBtn.Visibility = Visibility.Hidden;
         }
 
         private void datagridTermekek_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             modBtn.Visibility = Visibility.Visible;
             torlesBtn.Visibility = Visibility.Visible;
+            megrendelesBtn.Visibility = Visibility.Visible;
             mentesBtn.Visibility = Visibility.Hidden;
             if (datagridTermekek.SelectedItem != null)
             {
@@ -66,6 +71,12 @@ namespace WebshopProjekt.UserControls
         }
         private void mentesBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (!TryParsePriceFromText(ArTxtBx.Text, out decimal price))
+            {
+                MessageBox.Show("Érvénytelen ár. Adj meg egy számot.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             //uj termék objektum
             Termek ujTermek = new Termek(NevTxtBx.Text, decimal.Parse(ArTxtBx.Text), KategoriaTxtBx.Text, MarkaTxtBx.Text);
 
@@ -85,6 +96,14 @@ namespace WebshopProjekt.UserControls
 
         private void modBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (valasztottTermek == null) return;
+
+            if (!TryParsePriceFromText(ArTxtBx.Text, out decimal price))
+            {
+                MessageBox.Show("Érvénytelen ár. Adj meg egy számot.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             valasztottTermek.Name = NevTxtBx.Text;
             valasztottTermek.Price = decimal.Parse(ArTxtBx.Text);
             valasztottTermek.Category = KategoriaTxtBx.Text;
@@ -95,6 +114,44 @@ namespace WebshopProjekt.UserControls
             TermekRepository.update(valasztottTermek);
 
             ReadDatabase();
+        }
+
+        private void megrendelesBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (valasztottTermek == null)
+            {
+                MessageBox.Show("Előbb válassz ki egy terméket a listából.", "Figyelem", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dlg = new SzallitasiAdatokWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                var adat = dlg.SzallitasiAdat;
+
+                MessageBox.Show(
+                    $"Megrendelés rögzítve:\n\nTermék: {valasztottTermek.Name}\nÁr: {valasztottTermek.Price:N0} Ft\n\nSzállítási adatok:\n{adat.TeljesNev}\n{adat.Iranyitoszam} {adat.Telepules}\n{adat.UtcaHazszam}\nTelefon: {adat.Telefon}\nEmail: {adat.Email}",
+                    "Megrendelés", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                ReadDatabase();
+            }
+        }
+        private bool TryParsePriceFromText(string text, out decimal result)
+        {
+            result = 0m;
+            if (string.IsNullOrWhiteSpace(text)) return false;
+
+            var cleaned = text.Replace("Ft", "", System.StringComparison.OrdinalIgnoreCase)
+                              .Replace("\u00A0", "")
+                              .Replace(" ", "")
+                              .Trim();
+
+            return decimal.TryParse(cleaned, System.Globalization.NumberStyles.Number, CultureInfo.CurrentCulture, out result);
         }
     }
 }
