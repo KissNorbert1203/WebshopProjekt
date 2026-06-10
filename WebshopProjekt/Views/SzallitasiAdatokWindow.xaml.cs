@@ -76,6 +76,11 @@ namespace WebshopProjekt.Views
                 email
             );
 
+            var OrderRepository = new GenericRepository<Adatok>(App.databasePath);
+            var Order = OrderRepository.GetAll();
+            OrderRepository.insert( SzallitasiAdat);
+            //SzallitasiAdat. = Order;
+
             DialogResult = true;
             Close();
         }
